@@ -1,0 +1,56 @@
+{
+  "name": "@lapage/llm-service",
+  "version": "1.0.0",
+  "description": "Unified TypeScript service wrapper for OpenAI, Claude, and Gemini APIs",
+  "keywords": [
+    "llm",
+    "openai",
+    "claude",
+    "gemini",
+    "ai",
+    "typescript"
+  ],
+  "author": "Huy Lan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhuylanz/LLMService.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhuylanz/LLMService/issues"
+  },
+  "homepage": "https://github.com/zhuylanz/LLMService#readme",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"No tests configured\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "@google/genai": "^1.24.0",
+    "openai": "^5.20.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
