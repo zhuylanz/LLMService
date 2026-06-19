@@ -14,7 +14,7 @@ import type { ModerationCreateResponse } from 'openai/resources/moderations';
 import type { Transcription } from 'openai/resources/audio/transcriptions';
 import type { Stream as OpenAIStream } from 'openai/streaming';
 
-export type LLMProvider = 'openai' | 'claude' | 'gemini';
+export type LLMProvider = 'openai' | 'custom_open_ai' | 'claude' | 'gemini';
 
 export type LLMMessageRole =
   | 'system'
@@ -91,7 +91,3 @@ export type LLMImageData = ImagesResponse;
 export type LLMModerationData = ModerationCreateResponse;
 
 export type LLMTranscriptionData = Transcription;
-
-export type OpenAIMessageRole = LLMMessageRole;
-export type OpenAIMessage = LLMMessage;
-export type OpenAIServiceResponse<T> = LLMServiceResponse<T>;

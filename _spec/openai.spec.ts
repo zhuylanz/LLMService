@@ -1,13 +1,16 @@
-import { OpenAIService, OpenAIMessage } from '../client';
+import { LLMService, LLMMessage } from '../client';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
 describe('OpenAI Service', () => {
-  let openaiService: OpenAIService;
+  let openaiService: LLMService;
 
   beforeEach(() => {
     console.log('OPENAI API Key:', process.env.OPENAI_API_KEY);
-    openaiService = new OpenAIService(process.env.OPENAI_API_KEY || 'test-key');
+    openaiService = new LLMService({
+      provider: 'openai',
+      apiKey: process.env.OPENAI_API_KEY || 'test-key',
+    });
     console.log('Test setup: OpenAI service initialized');
   });
 
@@ -19,7 +22,7 @@ describe('OpenAI Service', () => {
     }
 
     console.log('Running test: should create a chat completion');
-    const messages: OpenAIMessage[] = [
+    const messages: LLMMessage[] = [
       { role: 'system', content: 'You are a helpful assistant.' },
       { role: 'user', content: 'Tell me a short joke.' },
     ];
@@ -38,9 +41,12 @@ describe('OpenAI Service', () => {
   it('should handle errors gracefully', async () => {
     console.log('Running test: should handle errors gracefully');
     // Create a service with invalid API key
-    const badService = new OpenAIService('invalid-key');
+    const badService = new LLMService({
+      provider: 'openai',
+      apiKey: 'invalid-key',
+    });
 
-    const messages: OpenAIMessage[] = [{ role: 'user', content: 'Hello' }];
+    const messages: LLMMessage[] = [{ role: 'user', content: 'Hello' }];
 
     console.log('Sending message with invalid API key');
     const result = await badService.createChatCompletion(messages);

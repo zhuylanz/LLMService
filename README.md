@@ -1,13 +1,25 @@
 # @lapage/llm-service
 
-Unified TypeScript service wrapper for OpenAI, Claude, and Gemini APIs.
+Unified TypeScript service wrapper for OpenAI, OpenAI-compatible, Claude, and Gemini APIs.
+
+## Design Principle
+
+Use one service and one configuration shape for every provider:
+
+```ts
+const service = new LLMService({ provider, apiKey, baseURL });
+```
+
+The package intentionally avoids provider-specific service classes and factory
+functions. Provider differences belong in configuration, not in consumer code.
 
 ## Features
 
 - One service interface for multiple providers.
+- One initialization pattern for all providers.
 - Chat completion and streaming support.
-- Embeddings support across OpenAI and Gemini.
-- OpenAI-only helpers for images, moderation, and transcription.
+- Embeddings support across OpenAI, OpenAI-compatible endpoints, and Gemini.
+- OpenAI/OpenAI-compatible helpers for images, moderation, and transcription.
 - Consistent response shape with error handling.
 
 ## Installation
@@ -38,21 +50,50 @@ if (result.success) {
 }
 ```
 
-## Provider Helpers
+## Provider Configuration
 
 ```ts
-import {
-  OpenAIService,
-  ClaudeService,
-  GeminiService,
-  createOpenAIService,
-  createClaudeService,
-  createGeminiService,
-} from '@lapage/llm-service';
+import { LLMService } from '@lapage/llm-service';
 
-const openai = new OpenAIService(process.env.OPENAI_API_KEY!);
-const claude = createClaudeService(process.env.ANTHROPIC_API_KEY!);
-const gemini = new GeminiService(process.env.GEMINI_API_KEY!);
+const openai = new LLMService({
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY!,
+});
+
+const customOpenAI = new LLMService({
+  provider: 'custom_open_ai',
+  apiKey: process.env.CUSTOM_OPEN_AI_API_KEY!,
+  baseURL: process.env.CUSTOM_OPEN_AI_BASE_URL!,
+});
+
+const claude = new LLMService({
+  provider: 'claude',
+  apiKey: process.env.ANTHROPIC_API_KEY!,
+});
+
+const gemini = new LLMService({
+  provider: 'gemini',
+  apiKey: process.env.GEMINI_API_KEY!,
+});
+```
+
+## OpenAI-Compatible Endpoints
+
+Use `custom_open_ai` when your provider exposes an OpenAI-compatible API, such
+as `/chat/completions`, `/embeddings`, or other OpenAI SDK-compatible routes.
+Pass the provider endpoint with `baseURL`.
+
+```ts
+const service = new LLMService({
+  provider: 'custom_open_ai',
+  apiKey: process.env.CUSTOM_OPEN_AI_API_KEY!,
+  baseURL: 'https://your-provider.example.com/v1',
+});
+
+const result = await service.createChatCompletion(
+  [{ role: 'user', content: 'Hello from a compatible endpoint.' }],
+  'your-provider-model',
+);
 ```
 
 ## API
@@ -60,17 +101,12 @@ const gemini = new GeminiService(process.env.GEMINI_API_KEY!);
 ### LLMService Constructor
 
 ```ts
-new LLMService(configOrApiKey, organization?)
+new LLMService(options)
 ```
-
-You can pass either:
-
-- apiKey string (defaults provider to openai)
-- options object:
 
 ```ts
 interface LLMServiceOptions {
-  provider?: 'openai' | 'claude' | 'gemini';
+  provider?: 'openai' | 'custom_open_ai' | 'claude' | 'gemini';
   apiKey: string;
   organization?: string;
   baseURL?: string;
@@ -82,6 +118,8 @@ interface LLMServiceOptions {
   location?: string;
 }
 ```
+
+If `provider` is omitted, it defaults to `openai`.
 
 ### Methods
 
@@ -114,6 +152,7 @@ interface LLMServiceResponse<T> {
 ## Provider Notes
 
 - OpenAI: supports all methods.
+- Custom OpenAI-compatible: uses the OpenAI SDK with `baseURL`; method support depends on the compatible endpoint.
 - Claude: supports chat and stream. Embeddings/images/moderation/transcription return unsupported operation errors.
 - Gemini: supports chat, stream, and embeddings. Images/moderation/transcription return unsupported operation errors.
 - Default model aliases are mapped by provider for convenience:
@@ -134,4 +173,3 @@ if (streamResult.success && streamResult.stream) {
   }
 }
 ```
-

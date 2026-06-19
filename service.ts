@@ -41,24 +41,21 @@ export class LLMService {
   private readonly anthropicClient?: Anthropic;
   private readonly geminiClient?: GoogleGenAI;
 
-  constructor(
-    configOrApiKey: string | LLMServiceOptions,
-    organization?: string,
-  ) {
-    const config = this.normalizeConfig(configOrApiKey, organization);
+  constructor(config: LLMServiceOptions) {
+    const normalizedConfig = this.normalizeConfig(config);
 
-    this.provider = config.provider;
-    this.apiKey = config.apiKey;
-    this.organization = config.organization;
-    this.baseURL = config.baseURL;
-    this.timeout = config.timeout;
-    this.maxRetries = config.maxRetries;
-    this.apiVersion = config.apiVersion;
-    this.vertexAI = config.vertexAI;
-    this.project = config.project;
-    this.location = config.location;
+    this.provider = normalizedConfig.provider;
+    this.apiKey = normalizedConfig.apiKey;
+    this.organization = normalizedConfig.organization;
+    this.baseURL = normalizedConfig.baseURL;
+    this.timeout = normalizedConfig.timeout;
+    this.maxRetries = normalizedConfig.maxRetries;
+    this.apiVersion = normalizedConfig.apiVersion;
+    this.vertexAI = normalizedConfig.vertexAI;
+    this.project = normalizedConfig.project;
+    this.location = normalizedConfig.location;
 
-    if (this.provider === 'openai') {
+    if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
       this.openAIClient = new OpenAI({
         apiKey: this.apiKey,
         organization: this.organization,
@@ -93,8 +90,7 @@ export class LLMService {
   }
 
   private normalizeConfig(
-    configOrApiKey: string | LLMServiceOptions,
-    organization?: string,
+    config: LLMServiceOptions,
   ): Required<
     Pick<
       LLMServiceOptions,
@@ -105,28 +101,17 @@ export class LLMService {
       LLMServiceOptions,
       'provider' | 'apiKey' | 'timeout' | 'maxRetries' | 'vertexAI'
     > {
-    if (typeof configOrApiKey === 'string') {
-      return {
-        provider: 'openai',
-        apiKey: configOrApiKey,
-        organization,
-        timeout: 30_000,
-        maxRetries: 3,
-        vertexAI: false,
-      };
-    }
-
     return {
-      provider: configOrApiKey.provider ?? 'openai',
-      apiKey: configOrApiKey.apiKey,
-      organization: configOrApiKey.organization,
-      baseURL: configOrApiKey.baseURL,
-      timeout: configOrApiKey.timeout ?? 30_000,
-      maxRetries: configOrApiKey.maxRetries ?? 3,
-      apiVersion: configOrApiKey.apiVersion,
-      vertexAI: configOrApiKey.vertexAI ?? false,
-      project: configOrApiKey.project,
-      location: configOrApiKey.location,
+      provider: config.provider ?? 'openai',
+      apiKey: config.apiKey,
+      organization: config.organization,
+      baseURL: config.baseURL,
+      timeout: config.timeout ?? 30_000,
+      maxRetries: config.maxRetries ?? 3,
+      apiVersion: config.apiVersion,
+      vertexAI: config.vertexAI ?? false,
+      project: config.project,
+      location: config.location,
     };
   }
 
@@ -160,7 +145,7 @@ export class LLMService {
     try {
       const resolvedModel = resolveChatModel(this.provider, model);
 
-      if (this.provider === 'openai') {
+      if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
         const client = this.ensureOpenAIClient();
         const formattedMessages = toOpenAIMessages(messages);
 
@@ -234,7 +219,7 @@ export class LLMService {
     try {
       const resolvedModel = resolveStreamModel(this.provider, model);
 
-      if (this.provider === 'openai') {
+      if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
         const client = this.ensureOpenAIClient();
         const formattedMessages = toOpenAIMessages(messages);
 
@@ -308,7 +293,7 @@ export class LLMService {
     quality: 'standard' | 'hd' = 'standard',
   ): Promise<LLMServiceResponse<LLMImageData>> {
     try {
-      if (this.provider !== 'openai') {
+      if (this.provider !== 'openai' && this.provider !== 'custom_open_ai') {
         return unsupportedOperationResponse(this.provider, 'generateImage');
       }
 
@@ -338,7 +323,7 @@ export class LLMService {
     try {
       const resolvedModel = resolveEmbeddingModel(this.provider, model);
 
-      if (this.provider === 'openai') {
+      if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
         const client = this.ensureOpenAIClient();
 
         const response = await client.embeddings.create({
@@ -377,7 +362,7 @@ export class LLMService {
     input: string | string[],
   ): Promise<LLMServiceResponse<LLMModerationData>> {
     try {
-      if (this.provider !== 'openai') {
+      if (this.provider !== 'openai' && this.provider !== 'custom_open_ai') {
         return unsupportedOperationResponse(this.provider, 'createModeration');
       }
 
@@ -408,7 +393,7 @@ export class LLMService {
     },
   ): Promise<LLMServiceResponse<LLMTranscriptionData>> {
     try {
-      if (this.provider !== 'openai') {
+      if (this.provider !== 'openai' && this.provider !== 'custom_open_ai') {
         return unsupportedOperationResponse(
           this.provider,
           'createTranscription',
