@@ -55,7 +55,7 @@ export class LLMService {
     this.project = normalizedConfig.project;
     this.location = normalizedConfig.location;
 
-    if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
+    if (this.provider === 'openai' || this.provider === 'custom_openai') {
       this.openAIClient = new OpenAI({
         apiKey: this.apiKey,
         organization: this.organization,
@@ -145,7 +145,7 @@ export class LLMService {
     try {
       const resolvedModel = resolveChatModel(this.provider, model);
 
-      if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
+      if (this.provider === 'openai' || this.provider === 'custom_openai') {
         const client = this.ensureOpenAIClient();
         const formattedMessages = toOpenAIMessages(messages);
 
@@ -219,7 +219,7 @@ export class LLMService {
     try {
       const resolvedModel = resolveStreamModel(this.provider, model);
 
-      if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
+      if (this.provider === 'openai' || this.provider === 'custom_openai') {
         const client = this.ensureOpenAIClient();
         const formattedMessages = toOpenAIMessages(messages);
 
@@ -293,7 +293,7 @@ export class LLMService {
     quality: 'standard' | 'hd' = 'standard',
   ): Promise<LLMServiceResponse<LLMImageData>> {
     try {
-      if (this.provider !== 'openai' && this.provider !== 'custom_open_ai') {
+      if (this.provider !== 'openai' && this.provider !== 'custom_openai') {
         return unsupportedOperationResponse(this.provider, 'generateImage');
       }
 
@@ -323,7 +323,7 @@ export class LLMService {
     try {
       const resolvedModel = resolveEmbeddingModel(this.provider, model);
 
-      if (this.provider === 'openai' || this.provider === 'custom_open_ai') {
+      if (this.provider === 'openai' || this.provider === 'custom_openai') {
         const client = this.ensureOpenAIClient();
 
         const response = await client.embeddings.create({
@@ -362,7 +362,7 @@ export class LLMService {
     input: string | string[],
   ): Promise<LLMServiceResponse<LLMModerationData>> {
     try {
-      if (this.provider !== 'openai' && this.provider !== 'custom_open_ai') {
+      if (this.provider !== 'openai' && this.provider !== 'custom_openai') {
         return unsupportedOperationResponse(this.provider, 'createModeration');
       }
 
@@ -393,7 +393,7 @@ export class LLMService {
     },
   ): Promise<LLMServiceResponse<LLMTranscriptionData>> {
     try {
-      if (this.provider !== 'openai' && this.provider !== 'custom_open_ai') {
+      if (this.provider !== 'openai' && this.provider !== 'custom_openai') {
         return unsupportedOperationResponse(
           this.provider,
           'createTranscription',

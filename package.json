@@ -1,6 +1,6 @@
 {
   "name": "@lapage/llm-service",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Unified TypeScript service wrapper for OpenAI, Claude, and Gemini APIs",
   "keywords": [
     "llm",

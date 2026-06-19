@@ -61,9 +61,9 @@ const openai = new LLMService({
 });
 
 const customOpenAI = new LLMService({
-  provider: 'custom_open_ai',
-  apiKey: process.env.CUSTOM_OPEN_AI_API_KEY!,
-  baseURL: process.env.CUSTOM_OPEN_AI_BASE_URL!,
+  provider: 'custom_openai',
+  apiKey: process.env.CUSTOM_OPENAI_API_KEY!,
+  baseURL: process.env.CUSTOM_OPENAI_BASE_URL!,
 });
 
 const claude = new LLMService({
@@ -79,14 +79,14 @@ const gemini = new LLMService({
 
 ## OpenAI-Compatible Endpoints
 
-Use `custom_open_ai` when your provider exposes an OpenAI-compatible API, such
+Use `custom_openai` when your provider exposes an OpenAI-compatible API, such
 as `/chat/completions`, `/embeddings`, or other OpenAI SDK-compatible routes.
 Pass the provider endpoint with `baseURL`.
 
 ```ts
 const service = new LLMService({
-  provider: 'custom_open_ai',
-  apiKey: process.env.CUSTOM_OPEN_AI_API_KEY!,
+  provider: 'custom_openai',
+  apiKey: process.env.CUSTOM_OPENAI_API_KEY!,
   baseURL: 'https://your-provider.example.com/v1',
 });
 
@@ -106,7 +106,7 @@ new LLMService(options)
 
 ```ts
 interface LLMServiceOptions {
-  provider?: 'openai' | 'custom_open_ai' | 'claude' | 'gemini';
+  provider?: 'openai' | 'custom_openai' | 'claude' | 'gemini';
   apiKey: string;
   organization?: string;
   baseURL?: string;
